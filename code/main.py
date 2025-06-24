@@ -17,10 +17,8 @@ if torch.cuda.is_available():
 else:
     device = torch.device("cpu")
 
-## name of intermediate document ##
 own_str = args.dataset
 
-## random seed ##
 seed = args.seed
 numpy.random.seed(seed)
 random.seed(seed)
