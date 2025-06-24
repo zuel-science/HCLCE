@@ -43,7 +43,6 @@ def sparse_mx_to_torch_sparse_tensor(sparse_mx):
 
 
 def load_acm(ratio, type_num):
-    # The order of node types: 0 p 1 a 2 s
     path = "HCLCE-main/data/acm/"
     label = np.load(path + "labels.npy").astype('int32')
     label = encode_onehot(label)
@@ -75,7 +74,6 @@ def load_acm(ratio, type_num):
 
 
 def load_dblp(ratio, type_num):
-    # The order of node types: 0 a 1 p 2 c 3 t
     path = "HCLCE-main/data/dblp/"
     label = np.load(path + "labels.npy").astype('int32')
     label = encode_onehot(label)
@@ -105,13 +103,11 @@ def load_dblp(ratio, type_num):
 
 
 def load_aminer(ratio, type_num):
-    # The order of node types: 0 p 1 a 2 r
     path = "HCLCE-main/data/aminer/"
     label = np.load(path + "labels.npy").astype('int32')
     label = encode_onehot(label)
     nei_a = np.load(path + "nei_a.npy", allow_pickle=True)
     nei_r = np.load(path + "nei_r.npy", allow_pickle=True)
-    # Because none of P, A or R has features, we assign one-hot encodings to all of them.
     feat_p = sp.eye(type_num[0])
     feat_a = sp.eye(type_num[1])
     feat_r = sp.eye(type_num[2])
@@ -138,7 +134,6 @@ def load_aminer(ratio, type_num):
 
 
 def load_freebase(ratio, type_num):
-    # The order of node types: 0 m 1 d 2 a 3 w
     path = "HCLCE-main/data/freebase/"
     label = np.load(path + "labels.npy").astype('int32')
     label = encode_onehot(label)
@@ -149,7 +144,6 @@ def load_freebase(ratio, type_num):
     feat_d = sp.eye(type_num[1])
     feat_a = sp.eye(type_num[2])
     feat_w = sp.eye(type_num[3])
-    # Because none of M, D, A or W has features, we assign one-hot encodings to all of them.
     mam = sp.load_npz(path + "mam.npz")
     mdm = sp.load_npz(path + "mdm.npz")
     mwm = sp.load_npz(path + "mwm.npz")
