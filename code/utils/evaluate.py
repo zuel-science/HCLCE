@@ -39,7 +39,6 @@ def evaluate(embeds, ratio, idx_train, idx_val, idx_test, label, nb_classes, dev
 
         logits_list = []
         for iter_ in range(200):
-            # train
             log.train()
             opt.zero_grad()
 
@@ -49,7 +48,6 @@ def evaluate(embeds, ratio, idx_train, idx_val, idx_test, label, nb_classes, dev
             loss.backward()
             opt.step()
 
-            # val
             logits = log(val_embs)
             preds = torch.argmax(logits, dim=1)
 
@@ -61,7 +59,6 @@ def evaluate(embeds, ratio, idx_train, idx_val, idx_test, label, nb_classes, dev
             val_macro_f1s.append(val_f1_macro)
             val_micro_f1s.append(val_f1_micro)
 
-            # test
             logits = log(test_embs)
             preds = torch.argmax(logits, dim=1)
 
@@ -83,7 +80,6 @@ def evaluate(embeds, ratio, idx_train, idx_val, idx_test, label, nb_classes, dev
         max_iter = val_micro_f1s.index(max(val_micro_f1s))
         micro_f1s.append(test_micro_f1s[max_iter])
 
-        # auc
         best_logits = logits_list[max_iter]
         best_proba = softmax(best_logits, dim=1)
         auc_score_list.append(roc_auc_score(y_true=test_lbls.detach().cpu().numpy(),
