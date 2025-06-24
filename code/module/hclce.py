@@ -26,7 +26,7 @@ class HCLCE(nn.Module):
         self.contrast = Contrast(hidden_dim, tau, lam)
         self.contranorm = ContraNorm(dim=64, scale=0.1, dual_norm=False, pre_norm=False, temp=0.8, learnable=False, positive=False, identity=False)
 
-    def forward(self, feats, pos, mps, nei_index):  # p a s
+    def forward(self, feats, pos, mps, nei_index):
         h_all = []
         for i in range(len(feats)):
             h_all.append(F.elu(self.feat_drop(self.fc_list[i](feats[i]))))
