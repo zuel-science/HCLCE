@@ -14,40 +14,33 @@ def dropout_feat(x, drop_prob):
     return x
 
 def edge_drop(edge_index, edge_weight, drop_prob):
-    # 生成随机保留的掩码
     num_edges = edge_index.size(1)
     mask = torch.rand(num_edges, device=edge_index.device) > drop_prob
 
-    # 根据掩码更新 edge_index 和 edge_weight
     edge_index = edge_index[:, mask]
     edge_weight = edge_weight[mask]
 
     return edge_index, edge_weight
 
 def construct_p_adj_from_mps(mps, num_p):
-    # 初始化空的列表，用于存储所有矩阵的索引和权重
     all_indices = []
     all_values = []
     
-    # 遍历 mps 中的所有稀疏矩阵
     for matrix in mps:
-        matrix = matrix.coalesce()  # 确保稀疏矩阵是 coalesced
-        all_indices.append(matrix.indices())  # 添加索引
-        all_values.append(matrix.values())    # 添加权重
+        matrix = matrix.coalesce()
+        all_indices.append(matrix.indices())
+        all_values.append(matrix.values())
     
-    # 将所有索引按列拼接
     pp_indices = torch.cat(all_indices, dim=1)
-    # 将所有权重拼接
     pp_values = torch.cat(all_values)
     
-    # 构造合并后的邻接矩阵并 coalesce
     pp = torch.sparse_coo_tensor(pp_indices, pp_values, size=(num_p, num_p)).coalesce()
     
     return pp
 
 def sparse_to_edge_index(sparse_tensor):
-    indices = sparse_tensor.indices()  # Shape: [2, nnz]
-    values = sparse_tensor.values()    # Shape: [nnz]
+    indices = sparse_tensor.indices()
+    values = sparse_tensor.values()
     return indices, values
 
 class GCNWithNoise(nn.Module):
@@ -56,11 +49,10 @@ class GCNWithNoise(nn.Module):
         
         self.num_layers = num_layers
         
-        # 第一层使用 input_dim，后续层使用 hidden_dim
         self.layers = nn.ModuleList()
-        self.layers.append(GCNConv(input_dim, hidden_dim))  # 第一层
+        self.layers.append(GCNConv(input_dim, hidden_dim))
         for _ in range(num_layers - 1):
-            self.layers.append(GCNConv(hidden_dim, hidden_dim))  # 后续层
+            self.layers.append(GCNConv(hidden_dim, hidden_dim))
 
     def forward(self, x, edge_index, edge_weight=None):
         for i in range(self.num_layers):
@@ -83,7 +75,6 @@ class Sm_encoder(nn.Module):
         self.pe = pe
         self.noise_std = noise_std
         
-        # 初始化 GCN
         self.gcn = GCNWithNoise(input_dim=hidden_dim, hidden_dim=hidden_dim, num_layers=num_layers)
 
     def forward(self, feat, mps):
